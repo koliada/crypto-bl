@@ -1,5 +1,5 @@
 import { Pool, PoolClient } from 'pg';
-import { EnvironmentVariables } from '../types/index.js';
+import { EnvironmentVariables } from '../types';
 
 export class DatabaseConnection {
   private pool: Pool;
