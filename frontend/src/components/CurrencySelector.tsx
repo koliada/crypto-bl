@@ -1,15 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { Card } from './UI';
-import type { Quote } from '../types';
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
-
-// Currency mappings for the API
-const CURRENCY_IDS = {
-  TON: '11419', // TON ID from CoinMarketCap
-  USDT: '825'   // USDT ID from CoinMarketCap
-};
+import { useState, useEffect } from "react";
+import styled from "styled-components";
+import { Card } from "./UI";
+import type { CurrencyId, Quote } from "../types";
+import { CURRENCY_IDS, API_URL } from "../const";
 
 const CurrencySelectorContainer = styled(Card)`
   display: flex;
@@ -24,13 +17,13 @@ const CurrencyRow = styled.div`
   gap: 1rem;
 `;
 
-const CurrencyButton = styled.button<{ $active: boolean }>`
+const CurrencyButton = styled.button`
   flex: 1;
   padding: 1rem;
-  border: 2px solid ${props => props.$active ? '#667eea' : '#e2e8f0'};
+  border: 2px solid #e2e8f0;
   border-radius: 8px;
-  background: ${props => props.$active ? '#f8fafc' : 'white'};
-  color: ${props => props.$active ? '#667eea' : '#4a5568'};
+  background: #f8fafc;
+  color: #4a5568;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -92,7 +85,9 @@ const LoadingSpinner = styled.div`
   animation: spin 1s ease-in-out infinite;
 
   @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+      transform: rotate(360deg);
+    }
   }
 `;
 
@@ -111,19 +106,19 @@ function formatRelativeTime(timestamp: number) {
     return `${diffInSeconds} seconds ago`;
   } else if (diffInSeconds < 3600) {
     const minutes = Math.floor(diffInSeconds / 60);
-    return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
   } else if (diffInSeconds < 86400) {
     const hours = Math.floor(diffInSeconds / 3600);
-    return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    return `${hours} hour${hours > 1 ? "s" : ""} ago`;
   } else {
     const days = Math.floor(diffInSeconds / 86400);
-    return `${days} day${days > 1 ? 's' : ''} ago`;
+    return `${days} day${days > 1 ? "s" : ""} ago`;
   }
 }
 
 function CurrencySelector() {
-  const [fromCurrency, setFromCurrency] = useState('TON');
-  const [toCurrency, setToCurrency] = useState('USDT');
+  const [fromCurrency, setFromCurrency] = useState<CurrencyId>("TON");
+  const [toCurrency, setToCurrency] = useState<CurrencyId>("USDT");
   const [quote, setQuote] = useState<Quote | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -131,21 +126,21 @@ function CurrencySelector() {
   const fetchQuote = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
-      const fromId = CURRENCY_IDS[fromCurrency as keyof typeof CURRENCY_IDS];
-      const toId = CURRENCY_IDS[toCurrency as keyof typeof CURRENCY_IDS];
-      
+      const fromId = CURRENCY_IDS[fromCurrency];
+      const toId = CURRENCY_IDS[toCurrency];
+
       const response = await fetch(`${API_URL}/api/quotes/${fromId}/${toId}`);
       const data = await response.json();
-      
-      if (data.status === 'OK') {
+
+      if (data.status === "OK") {
         setQuote(data.data);
       } else {
-        setError(data.message || 'Failed to fetch quote');
+        setError(data.message || "Failed to fetch quote");
       }
     } catch (err) {
-      setError('Network error: ' + (err as Error).message || 'Unknown error');
+      setError("Network error: " + (err as Error).message || "Unknown error");
     } finally {
       setLoading(false);
     }
@@ -163,31 +158,27 @@ function CurrencySelector() {
 
   return (
     <CurrencySelectorContainer>
-      <h3 style={{ margin: '0 0 1rem 0', color: '#1a202c' }}>Currency Exchange</h3>
-      
+      <h3 style={{ margin: "0 0 1rem 0", color: "#1a202c" }}>
+        Currency Exchange
+      </h3>
+
       <CurrencyRow>
-        <CurrencyButton 
-          $active={fromCurrency === 'TON'} 
-          onClick={() => setFromCurrency('TON')}
-        >
+        <CurrencyButton>
           {fromCurrency}
         </CurrencyButton>
-        
+
         <SwapButton onClick={swapCurrencies} title="Swap currencies">
           ⇄
         </SwapButton>
-        
-        <CurrencyButton 
-          $active={toCurrency === 'USDT'} 
-          onClick={() => setToCurrency('USDT')}
-        >
+
+        <CurrencyButton>
           {toCurrency}
         </CurrencyButton>
       </CurrencyRow>
 
       {loading && (
         <QuoteDisplay>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <LoadingSpinner />
             <span>Loading quote...</span>
           </div>
@@ -205,11 +196,7 @@ function CurrencySelector() {
         </QuoteDisplay>
       )}
 
-      {error && (
-        <ErrorMessage>
-          {error}
-        </ErrorMessage>
-      )}
+      {error && <ErrorMessage>{error}</ErrorMessage>}
     </CurrencySelectorContainer>
   );
 }

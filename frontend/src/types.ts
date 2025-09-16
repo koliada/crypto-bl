@@ -1,3 +1,5 @@
+import { CURRENCY_IDS } from "./const";
+
 declare global {
     interface ImportMeta {
         env: {
@@ -14,3 +16,5 @@ export interface Quote {
     quote: number;
     requested_at: number;
 }
+
+export type CurrencyId = keyof typeof CURRENCY_IDS;

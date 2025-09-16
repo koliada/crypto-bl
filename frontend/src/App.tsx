@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Container, Header, Main, StatusIndicator } from "./components/UI";
 import CurrencySelector from "./components/CurrencySelector";
 import type { ServerStatus } from "./types";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+import { API_URL } from "./const";
 
 function App() {
   const [backendStatus, setBackendStatus] = useState<ServerStatus>("checking");
