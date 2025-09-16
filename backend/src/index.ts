@@ -32,7 +32,7 @@ app.get("/api/health", async (_req: Request, res: Response<HealthResponse>) => {
       : "Backend running but database connection failed",
     timestamp: new Date().toISOString(),
   };
-  res.json(response);
+  return res.json(response);
 });
 
 // Quotes endpoint
@@ -70,7 +70,7 @@ app.get(
         quotes = [result];
       }
 
-      return res.json({
+      return res.status(200).json({
         status: "OK",
         message: "Quotes retrieved successfully",
         data: quotes[0],
@@ -116,10 +116,16 @@ app.use("*", (_req: Request, res: Response<ErrorResponse>) => {
   res.status(404).json(response);
 });
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`🚀 Backend server running on port ${PORT}`);
-  console.log(`📊 Environment: ${env.NODE_ENV}`);
-  console.log(
-    `🗄️  Database: ${env.DATABASE_URL.split("@")[1] || "Not configured"}`,
-  );
-});
+// Export app for testing
+export { app };
+
+// Only start server if not in test environment
+if (process.env['NODE_ENV'] !== "test") {
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`🚀 Backend server running on port ${PORT}`);
+    console.log(`📊 Environment: ${env.NODE_ENV}`);
+    console.log(
+      `🗄️  Database: ${env.DATABASE_URL.split("@")[1] || "Not configured"}`,
+    );
+  });
+}

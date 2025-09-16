@@ -7,7 +7,8 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "tsx watch src/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "keywords": ["crypto", "backend", "express", "postgresql", "typescript"],
   "author": "",
@@ -26,7 +27,13 @@
     "@types/pg": "^8.10.9",
     "@types/morgan": "^1.9.9",
     "@types/node": "^20.10.5",
+    "@types/jest": "^29.5.8",
     "typescript": "^5.3.3",
-    "tsx": "^4.6.2"
+    "tsx": "^4.6.2",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "supertest": "^6.3.3",
+    "@types/supertest": "^2.0.16",
+    "ts-node": "^10.9.1"
   }
 }
