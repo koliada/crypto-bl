@@ -1,22 +1,18 @@
 # Crypto BL
 
-A full-stack cryptocurrency application built with modern technologies.
+Disclaimers right away!
+
+1. Because of the time restriction, I essentially vibe coded the project structure and did not research what's the new hot thing out there. So I created a boilerplate of a stack familiar to me and focused on the details.
+2. The UI is also an AI creation.
+3. I, of course, implemented the backend logic and adjusted the things on the frontend myself, and ready to explain what's going on there.
+4. I'm sure there's a lot of boilerplate code left. I don't think it matters at this point. Setting the project from scratch and account for the perfect setup would take another day or two.
 
 ## Tech Stack
 
-- **Frontend**: React 18 + Vite + Styled Components
+- **Frontend**: React + Vite + Styled Components
 - **Backend**: Node.js + Express
 - **Database**: PostgreSQL
 - **Containerization**: Docker Compose
-
-## Features
-
-- Modern React frontend with Vite for fast development
-- Styled Components for component-based styling
-- Express.js backend with CORS and security middleware
-- PostgreSQL database with Docker
-- Hot reloading for both frontend and backend
-- Reset CSS styles for consistent cross-browser experience
 
 ## Getting Started
 
@@ -24,103 +20,67 @@ A full-stack cryptocurrency application built with modern technologies.
 
 - Docker and Docker Compose installed
 - Git
+- **! IMPORTANT !** `.env` file with `CMC_API_KEY`; of course, I wouldn't commit an API key to the public repo; see email
 
 ### Installation
 
 1. Clone the repository:
 ```bash
-git clone <your-repo-url>
+git clone git@github.com:koliada/crypto-bl.git
 cd crypto-bl
 ```
 
-2. Start the application with Docker Compose:
+2. Create an `.env` file with `CMC_API_KEY`:
+```properties
+CMC_API_KEY=xxxx-xxxx
+```
+
+3. Start the application with Docker Compose:
 ```bash
 docker compose up --build
 ```
 
 This will start:
-- PostgreSQL database on port 5432
-- Backend API on port 3001
-- Frontend on port 3000
+- PostgreSQL + apply the initial "migration"
+- Backend API
+- Frontend
 
-### Access the Application
+The frontend should be available at http://localhost:3000/.
 
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:3001
-- PostgreSQL: localhost:5432
+### Tests
 
-### Development
+As required, there are tests on both backend and frontend.
 
-The application is configured for development with:
-- Hot reloading for both frontend and backend
-- Volume mounting for live code changes
-- Environment variables for configuration
+They are also vibe coded and checked with my own eyes.
 
-### API Endpoints
+To run:
 
-- `GET /api/health` - Health check endpoint (includes database status)
-- `GET /api/test` - Test endpoint with environment info
-- `GET /api/quotes` - Get recent quotes
-- `POST /api/quotes` - Create a new quote (requires symbol_id and convert_id)
+```bash
+nvm use # or have Node.js installed globally
+cd backend
+npm i
+npm test
 
-### Database Initialization
-
-The database is automatically initialized with the required tables when the PostgreSQL container starts. The initialization script is located at `database/init.sql` and includes:
-
-- Quotes table with proper indexes
-- Sample data for testing
-- Table documentation and comments
-
-## Project Structure
-
-```
-crypto-bl/
-├── compose.yml
-├── database/
-│   └── init.sql
-├── backend/
-│   ├── Dockerfile
-│   ├── package.json
-│   ├── tsconfig.json
-│   └── src/
-│       ├── index.ts
-│       ├── types/
-│       │   └── index.ts
-│       └── database/
-│           └── connection.ts
-├── frontend/
-│   ├── Dockerfile
-│   ├── package.json
-│   ├── vite.config.js
-│   ├── index.html
-│   └── src/
-│       ├── main.jsx
-│       ├── App.jsx
-│       ├── components/
-│       │   └── UI/
-│       └── styles/
-│           └── GlobalStyles.js
-└── README.md
+# repeat for frontend
+cd ../frontend
+npm i
+npm test
 ```
 
-## Environment Variables
+### Potential Improvements
 
-### Backend
-- `NODE_ENV`: Environment (development/production)
-- `PORT`: Server port (default: 3001)
-- `DATABASE_URL`: PostgreSQL connection string
+Endless!
 
-### Frontend
-- `VITE_API_URL`: Backend API URL (default: http://localhost:3001)
+- Infra: Properly prepare for different environments
+- Database: Add proper migration tool (e.g., knex)
+- Database: Use ORM or query builder (Node.js has been historically impaired with good ORMs, but microORM looks nice; Slonik is also something interesting)
+- Backend: More trading pairs should already be supported by the DB table, but we should also properly store CMC IDs of the symbols, and generally, the possibilities are limitless (looking at the CMC API)
+- Backend: Historical data is already available, only an endpoint update is necessary to remove the `LIMIT` from the query; to also have more data without gaps, we of course need to fetch quotes periodically using cron or similar interval mechanism
+- Frontend: Currency buttons -> filterable autocomplete dropdowns with available pairs
+- Backend: Make 3rd party provider separation better, implement proper connector clients that handle edge cases and response/type mapping
+- Monitoring: Add proper error handling, logging and alerting
 
-## Contributing
+### ~~ FIN ~~
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test with Docker Compose
-5. Submit a pull request
-
-## License
-
-This project is licensed under the ISC License.
+Thanks for reading,<br>
+I hope this make sense.
