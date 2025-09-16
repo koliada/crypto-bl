@@ -1,0 +1,69 @@
+# Modern Docker Compose (no version needed)
+
+services:
+  postgres:
+    image: postgres:17.6
+    container_name: crypto-bl-postgres
+    environment:
+      POSTGRES_DB: crypto_bl
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - crypto-bl-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d crypto_bl"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: crypto-bl-backend
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/crypto_bl
+      PORT: 3001
+      CMC_API_KEY: ${CMC_API_KEY}
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - crypto-bl-network
+    command: npm run dev
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: crypto-bl-frontend
+    environment:
+      VITE_API_URL: http://localhost:3001
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - crypto-bl-network
+    command: npm run dev
+
+volumes:
+  postgres_data:
+
+networks:
+  crypto-bl-network:
+    driver: bridge
